@@ -35,7 +35,7 @@ TAG = re.compile(r"【(数据类|机理类|案例类)】")
 TARGET = re.compile(r"目标\s*(\d+)\s*字")
 COLLOQUIAL = re.compile(r"所以你看|说白了|那我问你|反过来|你想想|说到底|你看")
 
-# 与 SKILL.md 第五节、references/00-索引/14-人味与去AI味.md 第八节逐字一致。
+# 与 SKILL.md 第五节、references/14-人味与去AI味.md 第八节逐字一致。
 AI_BLACKLIST = (
     "总而言之", "由此可见", "众所周知", "不难发现",
     "值得注意的是", "毋庸置疑", "不可否认", "赋能", "闭环",
@@ -441,6 +441,7 @@ def check(path):
                         f"「{h[1]}」句子太齐，像播报；把长句拆短，每五句留一句十字以内", i + 1)
 
             # 9d 段落均长：四段以上且长度标准差过小，结构像模板
+            # 首质每块规定 100–150 字，块长天然接近，跳过这一项，避免误报。
             paras = []
             for _, text in body:
                 if text.startswith("#"):
@@ -448,7 +449,7 @@ def check(path):
                 p = re.sub(r"\s+", "", re.sub(r"^[-*·]\s*", "", text))
                 if p:
                     paras.append(p)
-            if len(paras) >= 4:
+            if len(paras) >= 4 and "首质" not in h[1]:
                 lens = [len(p) for p in paras]
                 mean = sum(lens) / len(lens)
                 if mean > 0:
